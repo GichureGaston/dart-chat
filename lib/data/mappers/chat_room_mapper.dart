@@ -12,4 +12,14 @@ extension ChatRoomModelMapper on ChatRoomModel {
       createdAt: createdAt,
     );
   }
+
+  ChatRoomModel toModel() {
+    return ChatRoomModel(
+      id: id,
+      name: name,
+      members: members,
+      description: description,
+      createdAt: createdAt,
+    );
+  }
 }
