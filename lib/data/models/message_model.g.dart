@@ -9,9 +9,9 @@ part of 'message_model.dart';
 MessageModel _$MessageModelFromJson(Map<String, dynamic> json) =>
     $checkedCreate('MessageModel', json, ($checkedConvert) {
       final val = MessageModel(
-        id: $checkedConvert('id', (v) => v as String?),
+        id: $checkedConvert('id', (v) => v as String),
         userId: $checkedConvert('userId', (v) => v as String?),
-        chatRoomId: $checkedConvert('chatRoomId', (v) => v as String?),
+        chatRoomId: $checkedConvert('chatRoomId', (v) => v as String),
         text: $checkedConvert('text', (v) => v as String?),
         timeStamp: $checkedConvert('timeStamp', (v) => v as String?),
       );

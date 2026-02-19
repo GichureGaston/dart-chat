@@ -4,9 +4,9 @@ import 'package:realtimechatapp/domain/entities/message.dart';
 extension MessageEntityMapper on MessageEntity {
   MessageModel toModel() {
     return MessageModel(
-      id: id,
+      id: '',
       userId: userId,
-      chatRoomId: chatRoomId,
+      chatRoomId: '',
       text: text,
       timeStamp: timeStamp,
     );

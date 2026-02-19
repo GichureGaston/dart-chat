@@ -5,18 +5,18 @@ part 'message_model.g.dart';
 @JsonSerializable(checked: true)
 class MessageModel {
   MessageModel({
-    this.id,
+    required this.id,
     this.userId,
-    this.chatRoomId,
+    required this.chatRoomId,
     this.text,
     this.timeStamp,
   });
   factory MessageModel.fromJson(Map<String, dynamic> json) =>
       _$MessageModelFromJson(json);
 
-  final String? id;
+  final String id;
   final String? userId;
-  final String? chatRoomId;
+  final String chatRoomId;
   final String? text;
   final String? timeStamp;
   MessageModel copyWith({
