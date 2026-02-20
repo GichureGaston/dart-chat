@@ -14,12 +14,12 @@ import '../entities/user.dart';
 import '../repositories/connection_repo.dart';
 import '../repositories/user_repo.dart';
 
-class HandleUserLoginUsecase implements UseCase<void, HandleUserLoginParams> {
+class HandleUserLoginUseCase implements UseCase<void, HandleUserLoginParams> {
   final UserRepository userRepository;
   final ChatRoomRepository roomRepository;
   final ConnectionRepository connectionRepository;
 
-  HandleUserLoginUsecase({
+  HandleUserLoginUseCase({
     required this.userRepository,
     required this.roomRepository,
     required this.connectionRepository,
@@ -39,7 +39,7 @@ class HandleUserLoginUsecase implements UseCase<void, HandleUserLoginParams> {
         return Left(ValidationFailure('Room ID cannot be empty'));
       }
 
-      print('[INFO] HandleUserLoginUsecase: ${params.userId} logging in');
+      print('[INFO] HandleUserLoginUseCase: ${params.userId} logging in');
 
       final user = UserEntity(
         id: params.userId,
@@ -104,7 +104,7 @@ class HandleUserLoginUsecase implements UseCase<void, HandleUserLoginParams> {
 
       return Right(null);
     } catch (e, stackTrace) {
-      print('[ERROR] Error in HandleUserLoginUsecase: $e');
+      print('[ERROR] Error in HandleUserLoginUseCase: $e');
       print('[STACKTRACE] $stackTrace');
       return Left(ServerFailure('Unexpected error: $e'));
     }

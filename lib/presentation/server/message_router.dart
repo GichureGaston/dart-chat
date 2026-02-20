@@ -7,8 +7,8 @@ import 'package:realtimechatapp/domain/usecases/send_message_usecase.dart';
 
 class MessageRouter {
   final SendMessageUseCase sendMessageUseCase;
-  final HandleUserLoginUsecase handleLoginUseCase;
-  final GetRoomHistoryUsecase getRoomHistoryUseCase;
+  final HandleUserLoginUseCase handleLoginUseCase;
+  final GetRoomHistoryUseCase getRoomHistoryUseCase;
   const MessageRouter({
     required this.sendMessageUseCase,
     required this.handleLoginUseCase,

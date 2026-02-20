@@ -7,10 +7,10 @@ import '../../core/errors/failures.dart';
 import '../../core/usecase/usecase.dart';
 import '../repositories/message_repo.dart';
 
-class GetRoomHistoryUsecase implements UseCase<void, GetRoomHistoryParams> {
+class GetRoomHistoryUseCase implements UseCase<void, GetRoomHistoryParams> {
   final MessageRepository messageRepository;
 
-  GetRoomHistoryUsecase({required this.messageRepository});
+  GetRoomHistoryUseCase({required this.messageRepository});
 
   @override
   Future<Either<Failure, void>> call(GetRoomHistoryParams params) async {

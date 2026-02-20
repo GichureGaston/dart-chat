@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:realtimechatapp/domain/usecases/get_room_history_usecase.dart';
+import 'package:realtimechatapp/domain/usecases/handle_indicator_usecase.dart';
 import 'package:realtimechatapp/domain/usecases/handle_user_login_usecase.dart';
 import 'package:realtimechatapp/domain/usecases/send_message_usecase.dart';
 import 'package:realtimechatapp/presentation/server/message_router.dart';
@@ -23,18 +24,36 @@ void main() async {
     final roomDataSource = ChatRoomLocalDataSourceImpl();
     final connectionDataSource = ConnectionDataSourceImpl();
 
-    final messageRepository = MessageRepositoryImpl();
+    final messageRepository = MessageRepositoryImpl(
+      localDataSource: messageDataSource,
+    );
     final userRepository = UserRepositoryImpl();
     final roomRepository = ChatRoomRepositoryImpl();
     final connectionRepository = ConnectionRepositoryImpl();
 
-    final sendMessageUseCase = SendMessageUseCase();
+    final sendMessageUseCase = SendMessageUseCase(
+      messageRepository: messageRepository,
+      connectionRepository: connectionRepository,
+    );
 
-    final handleLoginUseCase = HandleUserLoginUseCase();
+    final handleLoginUseCase = HandleUserLoginUseCase(
+      userRepository: userRepository,
+      roomRepository: roomRepository,
+      connectionRepository: connectionRepository,
+    );
 
-    final handleTypingUseCase = HandleTypingIndicatorUseCase();
+    final handleTypingUseCase = HandleTypingIndicatorUseCase(
+      connectionRepository: connectionRepository,
+    );
+    final getRoomHistoryUseCase = GetRoomHistoryUseCase(
+      messageRepository: messageRepository,
+    );
 
-    final messageRouter = MessageRouter();
+    final messageRouter = MessageRouter(
+      sendMessageUseCase: sendMessageUseCase,
+      handleLoginUseCase: handleLoginUseCase,
+      getRoomHistoryUseCase: getRoomHistoryUseCase,
+    );
 
     final server = TcpServer(
       port: 5000,
