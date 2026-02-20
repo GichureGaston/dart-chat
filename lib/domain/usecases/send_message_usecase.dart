@@ -37,7 +37,7 @@ class SendMessageUseCase implements UseCase<void, SendMessageParams> {
         userId: params.userId,
         chatRoomId: params.roomId,
         text: params.text,
-        timeStamp: DateTime.now.toString(),
+        timestamp: DateTime.now(),
       );
 
       print('[INFO] Message saved: ${message.id}');
@@ -49,7 +49,7 @@ class SendMessageUseCase implements UseCase<void, SendMessageParams> {
           'userId': message.userId,
           'roomId': message.chatRoomId,
           'text': message.text,
-          'timestamp': message.timeStamp.toString(),
+          'timestamp': message.timestamp.toString(),
         },
       });
 

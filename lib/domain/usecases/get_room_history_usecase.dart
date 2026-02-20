@@ -26,7 +26,6 @@ class GetRoomHistoryUseCase implements UseCase<void, GetRoomHistoryParams> {
         '[INFO] GetRoomHistoryUseCase: Fetching ${params.limit} messages from ${params.roomId}',
       );
 
-      // FETCH HISTORY
       final history = await messageRepository.getChatRoomHistory(
         params.roomId,
         limit: params.limit,
@@ -47,7 +46,7 @@ class GetRoomHistoryUseCase implements UseCase<void, GetRoomHistoryParams> {
                   'id': message.id,
                   'userId': message.userId,
                   'text': message.text,
-                  'timestamp': message.timeStamp.toString(),
+                  'timestamp': message.timestamp.toString(),
                 },
               )
               .toList(),

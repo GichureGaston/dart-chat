@@ -2,6 +2,7 @@ import '../../domain/entities/message.dart';
 import '../../domain/repositories/message_repo.dart';
 import '../datasources/message_local_source.dart';
 import '../mappers/message_mapper.dart';
+import '../models/message_model.dart';
 
 class MessageRepositoryImpl implements MessageRepository {
   final MessageLocalDataSource localDataSource;
@@ -11,7 +12,7 @@ class MessageRepositoryImpl implements MessageRepository {
   @override
   Future<void> saveMessage(MessageEntity message) async {
     try {
-      final model = MessageEntity().toModel();
+      final model = MessageMapper.toModel(message);
       await localDataSource.cacheMessage(model);
       print('[INFO] Message saved via repository');
     } catch (e, stackTrace) {
@@ -26,7 +27,7 @@ class MessageRepositoryImpl implements MessageRepository {
     try {
       final model = await localDataSource.getMessageById(id);
       if (model == null) return null;
-      return MessageEntity();
+      return MessageMapper.toEntity(model);
     } catch (e, stackTrace) {
       print('[ERROR] Error getting message: $e');
       print('[STACKTRACE] $stackTrace');
@@ -41,7 +42,7 @@ class MessageRepositoryImpl implements MessageRepository {
   }) async {
     try {
       final models = await localDataSource.getRoomHistory(roomId, limit: limit);
-      return models.map((model) => MessageEntity()).toList();
+      return models.map((model) => MessageMapper.toEntity(model)).toList();
     } catch (e, stackTrace) {
       print('[ERROR] Error getting room history: $e');
       print('[STACKTRACE] $stackTrace');
@@ -65,7 +66,7 @@ class MessageRepositoryImpl implements MessageRepository {
   Future<List<MessageEntity>> getReadReceipts(String messageId) async {
     try {
       final models = await localDataSource.getReadReceipts(messageId);
-      return models.map((model) => MessageEntity()).toList();
+      return models.map((model) => MessageMapper.toEntity(model)).toList();
     } catch (e, stackTrace) {
       print('[ERROR] Error getting read receipts: $e');
       print('[STACKTRACE] $stackTrace');

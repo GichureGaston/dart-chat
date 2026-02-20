@@ -4,18 +4,18 @@ import 'package:equatable/equatable.dart';
 
 class ConnectionEntity extends Equatable {
   const ConnectionEntity({
-    required this.id,
-    required this.userId,
-    required this.roomId,
-    required this.socket,
-    required this.connectedAt,
+    this.id,
+    this.userId,
+    this.roomId,
+    this.socket,
+    this.connectedAt,
   });
 
-  final String id;
-  final String userId;
-  final String roomId;
-  final Socket socket;
-  final DateTime connectedAt;
+  final String? id;
+  final String? userId;
+  final String? roomId;
+  final Socket? socket;
+  final DateTime? connectedAt;
 
   @override
   List<Object?> get props => [id, userId, roomId, socket, connectedAt];

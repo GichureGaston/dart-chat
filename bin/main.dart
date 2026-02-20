@@ -1,21 +1,19 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+import 'package:realtimechatapp/data/datasources/chat_room_source.dart';
+import 'package:realtimechatapp/data/datasources/connection_data_source.dart';
+import 'package:realtimechatapp/data/datasources/message_local_source.dart';
+import 'package:realtimechatapp/data/datasources/user_local_source.dart';
+import 'package:realtimechatapp/data/repositories/chat_room_repository_impl.dart';
+import 'package:realtimechatapp/data/repositories/connection_repository_impl.dart';
+import 'package:realtimechatapp/data/repositories/message_repository_impl.dart';
+import 'package:realtimechatapp/data/repositories/user_repository_impl.dart';
 import 'package:realtimechatapp/domain/usecases/get_room_history_usecase.dart';
 import 'package:realtimechatapp/domain/usecases/handle_indicator_usecase.dart';
 import 'package:realtimechatapp/domain/usecases/handle_user_login_usecase.dart';
 import 'package:realtimechatapp/domain/usecases/send_message_usecase.dart';
 import 'package:realtimechatapp/presentation/server/message_router.dart';
 import 'package:realtimechatapp/presentation/server/tcp_server.dart';
-
-import 'data/datasources/chat_room_source.dart';
-import 'data/datasources/connection_data_source.dart';
-import 'data/datasources/message_local_source.dart';
-import 'data/datasources/user_local_source.dart';
-import 'data/repositories/chat_room_repository_impl.dart';
-import 'data/repositories/connection_repository_impl.dart';
-import 'data/repositories/message_repository_impl.dart';
-import 'data/repositories/user_repository_impl.dart';
 
 void main() async {
   try {
@@ -63,9 +61,8 @@ void main() async {
 
     await server.startServer();
   } catch (e) {
-    if (kDebugMode) {
-      print('[ERROR] Fatal error: $e');
-    }
+    print('[ERROR] Fatal error: $e');
+
     exit(1);
   }
 }

@@ -4,34 +4,42 @@ part 'message_model.g.dart';
 
 @JsonSerializable(checked: true)
 class MessageModel {
+  final String id;
+  final String userId;
+  final String chatRoomId;
+  final String text;
+  final DateTime timestamp;
+  final List<String> readBy;
+
   MessageModel({
     required this.id,
-    this.userId,
+    required this.userId,
     required this.chatRoomId,
-    this.text,
-    this.timeStamp,
+    required this.text,
+    required this.timestamp,
+    this.readBy = const [],
   });
+
   factory MessageModel.fromJson(Map<String, dynamic> json) =>
       _$MessageModelFromJson(json);
 
-  final String id;
-  final String? userId;
-  final String chatRoomId;
-  final String? text;
-  final String? timeStamp;
+  Map<String, dynamic> toJson() => _$MessageModelToJson(this);
+
   MessageModel copyWith({
     String? id,
     String? userId,
     String? chatRoomId,
     String? text,
-    String? timeStamp,
+    DateTime? timestamp,
+    List<String>? readBy,
   }) {
     return MessageModel(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       chatRoomId: chatRoomId ?? this.chatRoomId,
       text: text ?? this.text,
-      timeStamp: timeStamp ?? this.timeStamp,
+      timestamp: timestamp ?? this.timestamp,
+      readBy: readBy ?? this.readBy,
     );
   }
 }

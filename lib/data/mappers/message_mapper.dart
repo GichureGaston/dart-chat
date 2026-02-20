@@ -1,26 +1,24 @@
-import 'package:realtimechatapp/data/models/message_model.dart';
-import 'package:realtimechatapp/domain/entities/message.dart';
+import '../../domain/entities/message.dart';
+import '../models/message_model.dart';
 
-extension MessageEntityMapper on MessageEntity {
-  MessageModel toModel() {
+class MessageMapper {
+  static MessageModel toModel(MessageEntity entity) {
     return MessageModel(
-      id: '',
-      userId: userId,
-      chatRoomId: '',
-      text: text,
-      timeStamp: timeStamp,
+      id: entity.id,
+      userId: entity.userId,
+      chatRoomId: entity.chatRoomId,
+      text: entity.text,
+      timestamp: entity.timestamp,
     );
   }
-}
 
-extension MessageModelMapper on MessageModel {
-  MessageEntity toEntity() {
+  static MessageEntity toEntity(MessageModel model) {
     return MessageEntity(
-      id: id,
-      userId: userId,
-      chatRoomId: chatRoomId,
-      text: text,
-      timeStamp: timeStamp,
+      id: model.id,
+      userId: model.userId,
+      chatRoomId: model.chatRoomId,
+      text: model.text,
+      timestamp: model.timestamp,
     );
   }
 }
