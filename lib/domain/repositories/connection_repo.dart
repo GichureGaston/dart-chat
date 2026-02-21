@@ -3,11 +3,30 @@ import 'dart:io';
 import '../entities/connection.dart';
 
 abstract class ConnectionRepository {
-  Future<void> addConnection(ConnectionEntity connection);
-  Future<void> removeConnection(Socket socket);
-  Future<List<Socket>> getConnectionsInRoom(String roomId);
-  Future<List<Socket>> getUserConnections(String userId);
-  Future<ConnectionEntity?> getConnectionBySocket(Socket socket);
-  Future<void> broadcastToRoom(String roomId, String message);
-  Future<void> sendDirectMessage(String userId, String message);
+  Future<Either<Failure, void>> addConnection(ConnectionEntity connection);
+  Future<Either<Failure, void>> removeConnection(String socketId);
+  Future<Either<Failure, List<String>>> getConnectionsInRoom(String roomId);
+  Future<Either<Failure, List<String>>> getUserConnections(String userId);
+  Future<Either<Failure, ConnectionEntity?>> getConnectionBySocketId(
+    String socketId,
+  );
+
+  Future<Either<Failure, void>> sendDirectMessage(
+    String userId,
+    MessageEntity message,
+  );
+  Future<Either<Failure, void>> broadcastMessage(
+    String roomId,
+    MessageEntity message,
+  );
+  Future<Either<Failure, void>> broadcastTypingIndicator(
+    String roomId,
+    String userId,
+    bool isTyping,
+  );
+  Future<Either<Failure, void>> broadcastPresence(
+    String roomId,
+    UserEntity user,
+    String status,
+  );
 }
