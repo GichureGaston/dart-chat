@@ -2,7 +2,6 @@ import '../../domain/entities/message.dart';
 import '../../domain/repositories/message_repo.dart';
 import '../datasources/message_local_source.dart';
 import '../mappers/message_mapper.dart';
-import '../models/message_model.dart';
 
 class MessageRepositoryImpl implements MessageRepository {
   final MessageLocalDataSource localDataSource;
@@ -14,7 +13,6 @@ class MessageRepositoryImpl implements MessageRepository {
     try {
       final model = MessageMapper.toModel(message);
       await localDataSource.cacheMessage(model);
-      print('[INFO] Message saved via repository');
     } catch (e, stackTrace) {
       print('[ERROR] Error saving message: $e');
       print('[STACKTRACE] $stackTrace');
@@ -62,7 +60,6 @@ class MessageRepositoryImpl implements MessageRepository {
     }
   }
 
-  @override
   Future<List<MessageEntity>> getReadReceipts(String messageId) async {
     try {
       final models = await localDataSource.getReadReceipts(messageId);

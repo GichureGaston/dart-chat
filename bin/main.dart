@@ -25,7 +25,7 @@ void main() async {
     final messageRepository = MessageRepositoryImpl(
       localDataSource: messageDataSource,
     );
-    final userRepository = UserRepositoryImpl();
+    final userRepository = UserRepositoryImpl(localDataSource: userDataSource);
     final roomRepository = ChatRoomRepositoryImpl();
     final connectionRepository = ConnectionRepositoryImpl();
 

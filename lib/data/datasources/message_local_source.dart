@@ -15,10 +15,10 @@ class MessageLocalDataSourceImpl implements MessageLocalDataSource {
   @override
   Future<void> cacheMessage(MessageModel message) async {
     try {
-      if (message.id!.isEmpty) {
+      if (message.id.isEmpty) {
         throw ArgumentError('Message ID cannot be empty');
       }
-      if (message.chatRoomId!.isEmpty) {
+      if (message.chatRoomId.isEmpty) {
         throw ArgumentError('Room ID cannot be empty');
       }
 
@@ -28,7 +28,15 @@ class MessageLocalDataSourceImpl implements MessageLocalDataSource {
         _roomMessages[message.chatRoomId]!.add(message.id);
       }
 
-      print('[INFO] Message cached: ${message.id}');
+      // Print message details
+      print('\n═══════════════════════════════════════');
+      print('[MESSAGE STORED]');
+      print('  ID: ${message.id}');
+      print('  User: ${message.userId}');
+      print('  Room: ${message.chatRoomId}');
+      print('  Text: ${message.text}');
+      print('  Timestamp: ${message.timestamp}');
+      print('═══════════════════════════════════════\n');
     } catch (e, stackTrace) {
       print('[ERROR] Error caching message: $e');
       print('[STACKTRACE] $stackTrace');
@@ -79,7 +87,15 @@ class MessageLocalDataSourceImpl implements MessageLocalDataSource {
           .map((id) => _messages[id])
           .whereType<MessageModel>()
           .toList();
-      print('[INFO] Retrieved ${history.length} messages from $roomId');
+
+      print('\n═══════════════════════════════════════');
+      print('[ROOM HISTORY] $roomId');
+      print('Total messages: ${history.length}');
+      for (var msg in history) {
+        print('  - ${msg.userId}: ${msg.text}');
+      }
+      print('═══════════════════════════════════════\n');
+
       return history;
     } catch (e, stackTrace) {
       print('[ERROR] Error retrieving room history: $e');
@@ -102,6 +118,13 @@ class MessageLocalDataSourceImpl implements MessageLocalDataSource {
         print('[WARNING] Message not found: $messageId');
         return;
       }
+      if (message.readBy.contains(userId)) {
+        print('[WARNING] Message already read by: $userId');
+        return;
+      }
+      final updatedReadBy = [...message.readBy, userId];
+      _messages[messageId] = message.copyWith(readBy: updatedReadBy);
+      print('[INFO] Message marked as read: $messageId by $userId');
     } catch (e, stackTrace) {
       print('[ERROR] Error marking as read: $e');
       print('[STACKTRACE] $stackTrace');
@@ -120,12 +143,31 @@ class MessageLocalDataSourceImpl implements MessageLocalDataSource {
         print('[WARNING] Message not found: $messageId');
         return [];
       }
-      print('[INFO] Retrieved read receipts for: $messageId');
+      print(
+        '[INFO] Retrieved read receipts for: $messageId (${message.readBy.length} users)',
+      );
       return [message];
     } catch (e, stackTrace) {
       print('[ERROR] Error getting read receipts: $e');
       print('[STACKTRACE] $stackTrace');
       rethrow;
     }
+  }
+
+  // Helper: Print all messages in storage
+  void printAllMessages() {
+    print('\n═══════════════════════════════════════');
+    print('[ALL MESSAGES IN STORAGE]');
+    if (_messages.isEmpty) {
+      print('No messages stored');
+    } else {
+      for (var entry in _messages.entries) {
+        print('ID: ${entry.key}');
+        print('  User: ${entry.value.userId}');
+        print('  Room: ${entry.value.chatRoomId}');
+        print('  Text: ${entry.value.text}');
+      }
+    }
+    print('═══════════════════════════════════════\n');
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:realtimechatapp/data/datasources/connection_data_source.dart';
 
 import 'message_router.dart';
@@ -38,22 +37,18 @@ class TcpServer {
       socket.listen(
         (_) {},
         onError: (error) {
-          if (kDebugMode) {
-            print('[ERROR] Socket error from $clientAddress: $error');
-          }
+          print('[ERROR] Socket error from $clientAddress: $error');
+
           handleClientDisconnect(socket, clientAddress);
           socket.destroy();
         },
         onDone: () {
-          if (kDebugMode) {
-            print('[DONE] Client Disconnected $clientAddress');
-          }
+          print('[DONE] Client Disconnected $clientAddress');
         },
       );
     } catch (e) {
-      if (kDebugMode) {
-        print('[ERROR] Error handling new client: $e');
-      }
+      print('[ERROR] Error handling new client: $e');
+
       try {
         socket.close();
       } catch (_) {}
@@ -67,9 +62,8 @@ class TcpServer {
   ) async {
     try {
       if (data.isEmpty) {
-        if (kDebugMode) {
-          print('[NOPE] Received empty data from $clientAddress');
-        }
+        print('[NOPE] Received empty data from $clientAddress');
+
         return;
       }
 
@@ -82,22 +76,16 @@ class TcpServer {
       for (final message in messages) {
         if (message.isEmpty) continue;
 
-        if (kDebugMode) {
-          print('\n[INFO] Received from $clientAddress:');
-        }
-        if (kDebugMode) {
-          print('[INFO] Raw: $message');
-        }
+        print('\n[INFO] Received from $clientAddress:');
+
+        print('[INFO] Raw: $message');
 
         await messageRouter.routeMessage(message, socket);
       }
     } catch (e, stackTrace) {
-      if (kDebugMode) {
-        print('[ERROR] Error processing message from $clientAddress: $e');
-      }
-      if (kDebugMode) {
-        print('[STACKTRACE] $stackTrace');
-      }
+      print('[ERROR] Error processing message from $clientAddress: $e');
+
+      print('[STACKTRACE] $stackTrace');
 
       try {
         final errorResponse = jsonEncode({
@@ -112,31 +100,22 @@ class TcpServer {
   void handleClientDisconnect(Socket socket, String clientAddress) {
     try {
       connectionDataSource.removeConnection(socket);
-      if (kDebugMode) {
-        print('[YOHOO]Connection Removed for$clientAddress\n');
-      }
+      print('[YOHOO]Connection Removed for$clientAddress\n');
     } catch (e) {
-      if (kDebugMode) {
-        print('[ERROR] Error removing client connection: $e');
-      }
+      print('[ERROR] Error removing client connection: $e');
     }
   }
 
   Future<void> shutdown() async {
     if (_serverRunning) return;
     try {
-      if (kDebugMode) {
-        print('\n[INFO] Shutting down server...');
-      }
+      print('\n[INFO] Shutting down server...');
+
       _serverRunning = false;
       await _serverSocket.close();
-      if (kDebugMode) {
-        print('[SUCCESS] Server shutdown complete');
-      }
+      print('[SUCCESS] Server shutdown complete');
     } catch (e) {
-      if (kDebugMode) {
-        print('[ERROR] Error shutting down server: $e');
-      }
+      print('[ERROR] Error shutting down server: $e');
     }
   }
 }
