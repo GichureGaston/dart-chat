@@ -1,8 +1,11 @@
 import '../entities/user.dart';
 
 abstract class UserRepository {
-  Future<void> saveUser(UserEntity user);
-  Future<UserEntity?> getUserById(String id);
-  Future<void> updateUserStatus(String userId, String status);
-  Future<List<UserEntity>> getUsersByIds(List<String> userIds);
+  Future<Either<Failure, void>> saveUser({UserEntity? user});
+  Future<Either<Failure, UserEntity?>> getUserById(String? id);
+  Future<Either<Failure, void>> updateUserStatus(
+    String? userId,
+    String? status,
+  );
+  Future<Either<Failure, List<UserEntity>?>> getUsersByIds(String? userIds);
 }

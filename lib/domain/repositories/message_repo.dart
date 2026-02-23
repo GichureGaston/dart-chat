@@ -1,9 +1,9 @@
 import '../entities/message.dart';
 
 abstract class MessageRepository {
-  Future<void> saveMessage(MessageEntity message);
-  Future<MessageEntity?> getMessageById(String id);
-  Future<List<MessageEntity>> getChatRoomHistory(
+  Future<Either<Failure, void>> saveMessage(MessageEntity message);
+  Future<Either<Failure, MessageEntity?>> getMessageById(String id);
+  Future<Either<Failure, List<MessageEntity>>> getChatRoomHistory(
     String roomId, {
     int limit = 100,
   });

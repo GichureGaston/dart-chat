@@ -23,7 +23,7 @@ class ChatRoomModel {
     String? name,
     String? description,
     DateTime? createdAt,
-    Set<String>? members,
+    List<String>? members,
   }) {
     return ChatRoomModel(
       id: id ?? this.id,
