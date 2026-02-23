@@ -13,10 +13,9 @@ class MessageRepositoryImpl implements MessageRepository {
     try {
       final model = MessageMapper.toModel(message);
       await localDataSource.cacheMessage(model);
-    } catch (e, stackTrace) {
-      print('[ERROR] Error saving message: $e');
-      print('[STACKTRACE] $stackTrace');
-      rethrow;
+      return const Right(null);
+    } catch (e) {
+      return Left(StorageFailure(e.toString()));
     }
   }
 
