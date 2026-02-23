@@ -12,9 +12,9 @@ class ConnectionEntity extends Equatable {
   });
 
   final String? id;
-  final String? userId;
-  final String? roomId;
-  final Socket? socket;
+  final String userId;
+  final String roomId;
+  final String socketId;
   final DateTime? connectedAt;
 
   @override
