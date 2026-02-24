@@ -9,9 +9,10 @@ part of 'connection_model.dart';
 ConnectionModel _$ConnectionModelFromJson(Map<String, dynamic> json) =>
     $checkedCreate('ConnectionModel', json, ($checkedConvert) {
       final val = ConnectionModel(
+        socketId: $checkedConvert('socketId', (v) => v as String),
+        userId: $checkedConvert('userId', (v) => v as String),
+        roomId: $checkedConvert('roomId', (v) => v as String),
         id: $checkedConvert('id', (v) => v as String?),
-        userId: $checkedConvert('userId', (v) => v as String?),
-        roomId: $checkedConvert('roomId', (v) => v as String?),
         connectedAt: $checkedConvert(
           'connectedAt',
           (v) => v == null ? null : DateTime.parse(v as String),
@@ -22,8 +23,9 @@ ConnectionModel _$ConnectionModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ConnectionModelToJson(ConnectionModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'socketId': instance.socketId,
       'userId': instance.userId,
       'roomId': instance.roomId,
+      'id': instance.id,
       'connectedAt': instance.connectedAt?.toIso8601String(),
     };

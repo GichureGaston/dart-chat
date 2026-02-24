@@ -11,14 +11,14 @@ ChatRoomModel _$ChatRoomModelFromJson(Map<String, dynamic> json) =>
       final val = ChatRoomModel(
         id: $checkedConvert('id', (v) => v as String),
         name: $checkedConvert('name', (v) => v as String),
+        members: $checkedConvert(
+          'members',
+          (v) => (v as List<dynamic>).map((e) => e as String).toList(),
+        ),
         description: $checkedConvert('description', (v) => v as String?),
         createdAt: $checkedConvert(
           'createdAt',
           (v) => v == null ? null : DateTime.parse(v as String),
-        ),
-        members: $checkedConvert(
-          'members',
-          (v) => (v as List<dynamic>).map((e) => e as String).toSet(),
         ),
       );
       return val;
@@ -30,5 +30,5 @@ Map<String, dynamic> _$ChatRoomModelToJson(ChatRoomModel instance) =>
       'name': instance.name,
       'description': instance.description,
       'createdAt': instance.createdAt?.toIso8601String(),
-      'members': instance.members.toList(),
+      'members': instance.members,
     };

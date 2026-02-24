@@ -4,23 +4,36 @@ part 'connection_model.g.dart';
 
 @JsonSerializable(checked: true)
 class ConnectionModel {
-  ConnectionModel({this.id, this.userId, this.roomId, this.connectedAt});
+  ConnectionModel({
+    required this.socketId,
+    required this.userId,
+    required this.roomId,
+    this.id,
+    this.connectedAt,
+  });
+
   factory ConnectionModel.fromJson(Map<String, dynamic> json) =>
       _$ConnectionModelFromJson(json);
+
+  final String socketId;
+  final String userId;
+  final String roomId;
   final String? id;
-  final String? userId;
-  final String? roomId;
   final DateTime? connectedAt;
+  Map<String, dynamic> toJson() => _$ConnectionModelToJson(this);
+
   ConnectionModel copyWith({
-    String? id,
+    String? socketId,
     String? userId,
     String? roomId,
+    String? id,
     DateTime? connectedAt,
   }) {
     return ConnectionModel(
-      id: id ?? this.id,
+      socketId: socketId ?? this.socketId,
       userId: userId ?? this.userId,
       roomId: roomId ?? this.roomId,
+      id: id ?? this.id,
       connectedAt: connectedAt ?? this.connectedAt,
     );
   }

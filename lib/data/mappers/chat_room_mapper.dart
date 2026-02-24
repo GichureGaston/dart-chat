@@ -6,7 +6,8 @@ class ChatRoomMapper {
     return ChatRoomModel(
       id: entity.id,
       name: entity.name,
-      members: entity.members..toString(),
+      description: entity.description,
+      members: entity.members.toList(),
       createdAt: entity.createdAt,
     );
   }
@@ -15,6 +16,7 @@ class ChatRoomMapper {
     return ChatRoomEntity(
       id: model.id,
       name: model.name,
+      description: model.description,
       members: model.members.toSet(),
       createdAt: model.createdAt,
     );

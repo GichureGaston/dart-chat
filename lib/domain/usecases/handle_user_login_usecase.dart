@@ -1,8 +1,3 @@
-// lib/domain/usecases/handle_user_login_usecase.dart
-
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:realtimechatapp/domain/repositories/chat_room_repo.dart';
 import 'package:uuid/uuid.dart';
@@ -27,87 +22,52 @@ class HandleUserLoginUseCase implements UseCase<void, HandleUserLoginParams> {
 
   @override
   Future<Either<Failure, void>> call(HandleUserLoginParams params) async {
-    try {
-      // VALIDATION
-      if (params.userId.isEmpty) {
-        return Left(ValidationFailure('User ID cannot be empty'));
-      }
-      if (params.userName.isEmpty) {
-        return Left(ValidationFailure('User name cannot be empty'));
-      }
-      if (params.roomId.isEmpty) {
-        return Left(ValidationFailure('Room ID cannot be empty'));
-      }
-
-      print('[INFO] HandleUserLoginUseCase: ${params.userId} logging in');
-
-      final user = UserEntity(
-        id: params.userId,
-        name: params.userName,
-        status: 'online',
-      );
-
-      try {
-        await roomRepository.addUserToRoom(params.roomId, params.userId);
-        print('[INFO] User added to room: ${params.roomId}');
-      } catch (e) {
-        return Left(StorageFailure('Failed to add user to room: $e'));
-      }
-
-      const uuid = Uuid();
-      final connection = ConnectionEntity(
-        id: uuid.v4(),
-        userId: params.userId,
-        roomId: params.roomId,
-        socket: params.socket,
-        connectedAt: DateTime.now(),
-      );
-
-      try {
-        await connectionRepository.addConnection(connection);
-        print('[INFO] Connection tracked: ${connection.id}');
-      } catch (e) {
-        return Left(ConnectionFailure('Failed to track connection: $e'));
-      }
-
-      final presenceMessage = jsonEncode({
-        'type': 'presence',
-        'data': {
-          'userId': params.userId,
-          'userName': params.userName,
-          'status': 'online',
-          'roomId': params.roomId,
-        },
-      });
-
-      await connectionRepository.broadcastToRoom(
-        params.roomId,
-        presenceMessage,
-      );
-      print('[INFO] Presence announced');
-
-      final confirmMessage = jsonEncode({
-        'type': 'login_success',
-        'data': {
-          'userId': params.userId,
-          'roomId': params.roomId,
-          'message': 'Welcome ${params.userName}!',
-        },
-      });
-
-      try {
-        params.socket.write(confirmMessage + '\n');
-        print('[INFO] Login confirmation sent');
-      } catch (e) {
-        return Left(ConnectionFailure('Failed to send confirmation: $e'));
-      }
-
-      return Right(null);
-    } catch (e, stackTrace) {
-      print('[ERROR] Error in HandleUserLoginUseCase: $e');
-      print('[STACKTRACE] $stackTrace');
-      return Left(ServerFailure('Unexpected error: $e'));
+    if (params.userId.isEmpty) {
+      return Left(ValidationFailure('User ID cannot be empty'));
     }
+    if (params.userName.isEmpty) {
+      return Left(ValidationFailure('User name cannot be empty'));
+    }
+    if (params.roomId.isEmpty) {
+      return Left(ValidationFailure('Room ID cannot be empty'));
+    }
+    if (params.socketId.isEmpty) {
+      return Left(ValidationFailure('Socket ID cannot be empty'));
+    }
+
+    final user = UserEntity(
+      id: params.userId,
+      name: params.userName,
+      status: 'online',
+    );
+
+    final saveResult = await userRepository.saveUser(user: user);
+    if (saveResult.isLeft()) return saveResult;
+
+    final roomResult = await roomRepository.addUserToRoom(
+      params.roomId,
+      params.userId,
+    );
+    if (roomResult.isLeft()) return roomResult;
+
+    final connection = ConnectionEntity(
+      id: const Uuid().v4(),
+      userId: params.userId,
+      roomId: params.roomId,
+      socketId: params.socketId,
+      connectedAt: DateTime.now(),
+    );
+
+    final connectionResult = await connectionRepository.addConnection(
+      connection,
+    );
+    if (connectionResult.isLeft()) return connectionResult;
+
+    return connectionRepository.broadcastPresence(
+      params.roomId,
+      user,
+      'online',
+    );
   }
 }
 
@@ -115,12 +75,12 @@ class HandleUserLoginParams {
   final String userId;
   final String userName;
   final String roomId;
-  final Socket socket;
+  final String socketId;
 
   HandleUserLoginParams({
     required this.userId,
     required this.userName,
     required this.roomId,
-    required this.socket,
+    required this.socketId,
   });
 }

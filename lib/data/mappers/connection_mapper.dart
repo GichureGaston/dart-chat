@@ -4,19 +4,20 @@ import '../models/connection_model.dart';
 class ConnectionMapper {
   static ConnectionModel toModel(ConnectionEntity entity) {
     return ConnectionModel(
-      id: entity.id,
+      socketId: entity.socketId,
       userId: entity.userId,
       roomId: entity.roomId,
+      id: entity.id,
       connectedAt: entity.connectedAt,
     );
   }
 
-  static ConnectionEntity toEntity(ConnectionModel model, socket) {
+  static ConnectionEntity toEntity(ConnectionModel model) {
     return ConnectionEntity(
-      id: '',
-      userId: '',
-      roomId: '',
-      socket: socket,
+      socketId: model.socketId,
+      userId: model.userId,
+      roomId: model.roomId,
+      id: model.id,
       connectedAt: model.connectedAt,
     );
   }

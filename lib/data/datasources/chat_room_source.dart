@@ -10,39 +10,54 @@ abstract class ChatRoomLocalDataSource {
 }
 
 class ChatRoomLocalDataSourceImpl implements ChatRoomLocalDataSource {
+  final Map<String, ChatRoomModel> _rooms = {};
+
   @override
-  Future<void> addUserToRoom(String roomId, String userId) {
-    // TODO: implement addUserToRoom
-    throw UnimplementedError();
+  Future<void> createRoom(ChatRoomModel room) async {
+    if (room.id.isEmpty) throw ArgumentError('Room ID cannot be empty');
+    if (room.name.isEmpty) throw ArgumentError('Room name cannot be empty');
+    _rooms[room.id] = room;
   }
 
   @override
-  Future<void> createRoom(ChatRoomModel room) {
-    // TODO: implement createRoom
-    throw UnimplementedError();
+  Future<ChatRoomModel?> getRoomById(String id) async {
+    if (id.isEmpty) throw ArgumentError('Room ID cannot be empty');
+    return _rooms[id];
   }
 
   @override
-  Future<List<ChatRoomModel>> getAllRooms() {
-    // TODO: implement getAllRooms
-    throw UnimplementedError();
+  Future<List<ChatRoomModel>> getAllRooms() async {
+    return _rooms.values.toList();
   }
 
   @override
-  Future<ChatRoomModel?> getRoomById(String id) {
-    // TODO: implement getRoomById
-    throw UnimplementedError();
+  Future<void> addUserToRoom(String roomId, String userId) async {
+    if (roomId.isEmpty) throw ArgumentError('Room ID cannot be empty');
+    if (userId.isEmpty) throw ArgumentError('User ID cannot be empty');
+
+    final room = _rooms[roomId];
+    if (room == null) throw ArgumentError('Room not found: $roomId');
+    if (room.members.contains(userId)) return;
+
+    _rooms[roomId] = room.copyWith(members: [...room.members, userId]);
   }
 
   @override
-  Future<List<String>> getRoomMembers(String roomId) {
-    // TODO: implement getRoomMembers
-    throw UnimplementedError();
+  Future<void> removeUserFromRoom(String roomId, String userId) async {
+    if (roomId.isEmpty) throw ArgumentError('Room ID cannot be empty');
+    if (userId.isEmpty) throw ArgumentError('User ID cannot be empty');
+
+    final room = _rooms[roomId];
+    if (room == null) throw ArgumentError('Room not found: $roomId');
+
+    _rooms[roomId] = room.copyWith(
+      members: room.members.where((id) => id != userId).toList(),
+    );
   }
 
   @override
-  Future<void> removeUserFromRoom(String roomId, String userId) {
-    // TODO: implement removeUserFromRoom
-    throw UnimplementedError();
+  Future<List<String>> getRoomMembers(String roomId) async {
+    if (roomId.isEmpty) throw ArgumentError('Room ID cannot be empty');
+    return _rooms[roomId]?.members ?? [];
   }
 }

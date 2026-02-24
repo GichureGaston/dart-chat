@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:realtimechatapp/data/datasources/chat_room_source.dart';
-import 'package:realtimechatapp/data/datasources/connection_data_source.dart';
 import 'package:realtimechatapp/data/datasources/message_local_source.dart';
 import 'package:realtimechatapp/data/datasources/user_local_source.dart';
 import 'package:realtimechatapp/data/repositories/chat_room_repository_impl.dart';
@@ -20,13 +19,14 @@ void main() async {
     final messageDataSource = MessageLocalDataSourceImpl();
     final userDataSource = UserLocalDataSourceImpl();
     final roomDataSource = ChatRoomLocalDataSourceImpl();
-    final connectionDataSource = ConnectionDataSourceImpl();
 
     final messageRepository = MessageRepositoryImpl(
       localDataSource: messageDataSource,
     );
     final userRepository = UserRepositoryImpl(localDataSource: userDataSource);
-    final roomRepository = ChatRoomRepositoryImpl();
+    final roomRepository = ChatRoomRepositoryImpl(
+      localDataSource: roomDataSource,
+    );
     final connectionRepository = ConnectionRepositoryImpl();
 
     final sendMessageUseCase = SendMessageUseCase(
@@ -56,7 +56,7 @@ void main() async {
     final server = TcpServer(
       port: 5000,
       messageRouter: messageRouter,
-      connectionDataSource: connectionDataSource,
+      connectionRepository: connectionRepository,
     );
 
     await server.startServer();

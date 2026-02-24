@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+import 'package:realtimechatapp/core/errors/failures.dart';
+
 import '../../domain/entities/message.dart';
 import '../../domain/repositories/message_repo.dart';
 import '../datasources/message_local_source.dart';
@@ -9,7 +12,7 @@ class MessageRepositoryImpl implements MessageRepository {
   MessageRepositoryImpl({required this.localDataSource});
 
   @override
-  Future<void> saveMessage(MessageEntity message) async {
+  Future<Either<Failure, void>> saveMessage(MessageEntity message) async {
     try {
       final model = MessageMapper.toModel(message);
       await localDataSource.cacheMessage(model);
@@ -20,53 +23,51 @@ class MessageRepositoryImpl implements MessageRepository {
   }
 
   @override
-  Future<MessageEntity?> getMessageById(String id) async {
+  Future<Either<Failure, MessageEntity?>> getMessageById(String id) async {
     try {
       final model = await localDataSource.getMessageById(id);
-      if (model == null) return null;
-      return MessageMapper.toEntity(model);
-    } catch (e, stackTrace) {
-      print('[ERROR] Error getting message: $e');
-      print('[STACKTRACE] $stackTrace');
-      rethrow;
+      if (model == null) return const Right(null);
+      return Right(MessageMapper.toEntity(model));
+    } catch (e) {
+      return Left(StorageFailure(e.toString()));
     }
   }
 
   @override
-  Future<List<MessageEntity>> getChatRoomHistory(
+  Future<Either<Failure, List<MessageEntity>>> getChatRoomHistory(
     String roomId, {
     int limit = 100,
   }) async {
     try {
       final models = await localDataSource.getRoomHistory(roomId, limit: limit);
-      return models.map((model) => MessageMapper.toEntity(model)).toList();
-    } catch (e, stackTrace) {
-      print('[ERROR] Error getting room history: $e');
-      print('[STACKTRACE] $stackTrace');
-      rethrow;
+      return Right(models.map(MessageMapper.toEntity).toList());
+    } catch (e) {
+      return Left(StorageFailure(e.toString()));
     }
   }
 
   @override
-  Future<void> markMessageAsRead(String messageId, String userId) async {
+  Future<Either<Failure, void>> markMessageAsRead(
+    String messageId,
+    String userId,
+  ) async {
     try {
       await localDataSource.markMessageAsRead(messageId, userId);
-      print('[INFO] Message marked as read via repository');
-    } catch (e, stackTrace) {
-      print('[ERROR] Error marking message as read: $e');
-      print('[STACKTRACE] $stackTrace');
-      rethrow;
+      return const Right(null);
+    } catch (e) {
+      return Left(StorageFailure(e.toString()));
     }
   }
 
-  Future<List<MessageEntity>> getReadReceipts(String messageId) async {
+  @override
+  Future<Either<Failure, List<MessageEntity>>> getReadReceipts(
+    String messageId,
+  ) async {
     try {
       final models = await localDataSource.getReadReceipts(messageId);
-      return models.map((model) => MessageMapper.toEntity(model)).toList();
-    } catch (e, stackTrace) {
-      print('[ERROR] Error getting read receipts: $e');
-      print('[STACKTRACE] $stackTrace');
-      rethrow;
+      return Right(models.map(MessageMapper.toEntity).toList());
+    } catch (e) {
+      return Left(StorageFailure(e.toString()));
     }
   }
 }

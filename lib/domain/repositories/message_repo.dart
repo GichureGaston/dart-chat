@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+
+import '../../core/errors/failures.dart';
 import '../entities/message.dart';
 
 abstract class MessageRepository {
@@ -7,5 +10,11 @@ abstract class MessageRepository {
     String roomId, {
     int limit = 100,
   });
-  Future<void> markMessageAsRead(String messageId, String userId);
+  Future<Either<Failure, void>> markMessageAsRead(
+    String messageId,
+    String userId,
+  );
+  Future<Either<Failure, List<MessageEntity>>> getReadReceipts(
+    String messageId,
+  );
 }

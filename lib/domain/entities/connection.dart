@@ -1,37 +1,35 @@
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 
 class ConnectionEntity extends Equatable {
   const ConnectionEntity({
+    required this.socketId,
+    required this.userId,
+    required this.roomId,
     this.id,
-    this.userId,
-    this.roomId,
-    this.socket,
     this.connectedAt,
   });
 
-  final String? id;
+  final String socketId;
   final String userId;
   final String roomId;
-  final String socketId;
+  final String? id;
   final DateTime? connectedAt;
 
   @override
-  List<Object?> get props => [id, userId, roomId, socket, connectedAt];
+  List<Object?> get props => [socketId, userId, roomId, id, connectedAt];
 
   ConnectionEntity copyWith({
-    String? id,
+    String? socketId,
     String? userId,
     String? roomId,
-    Socket? socket,
+    String? id,
     DateTime? connectedAt,
   }) {
     return ConnectionEntity(
-      id: id ?? this.id,
+      socketId: socketId ?? this.socketId,
       userId: userId ?? this.userId,
       roomId: roomId ?? this.roomId,
-      socket: socket ?? this.socket,
+      id: id ?? this.id,
       connectedAt: connectedAt ?? this.connectedAt,
     );
   }

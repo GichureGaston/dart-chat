@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 
 import '../../core/errors/failures.dart';
@@ -19,50 +17,31 @@ class SendMessageUseCase implements UseCase<void, SendMessageParams> {
 
   @override
   Future<Either<Failure, void>> call(SendMessageParams params) async {
-    try {
-      if (params.userId.isEmpty) {
-        return Left(ValidationFailure('User ID cannot be empty'));
-      }
-      if (params.roomId.isEmpty) {
-        return Left(ValidationFailure('Room ID cannot be empty'));
-      }
-      if (params.text.isEmpty) {
-        return Left(ValidationFailure('Message text cannot be empty'));
-      }
-
-      print('[INFO] SendMessageUseCase: Sending message from ${params.userId}');
-
-      final message = MessageEntity(
-        id: params.messageId,
-        userId: params.userId,
-        chatRoomId: params.roomId,
-        text: params.text,
-        timestamp: DateTime.now(),
-      );
-
-      print('[INFO] Message saved: ${message.id}');
-
-      final jsonMessage = jsonEncode({
-        'type': 'message',
-        'data': {
-          'id': message.id,
-          'userId': message.userId,
-          'roomId': message.chatRoomId,
-          'text': message.text,
-          'timestamp': message.timestamp.toString(),
-        },
-      });
-
-      await connectionRepository.broadcastToRoom(params.roomId, jsonMessage);
-      print('[INFO] Message broadcasted to ${params.roomId}');
-
-      return Right(null);
-    } catch (e, stackTrace) {
-      print('[ERROR] Error in SendMessageUseCase: $e');
-      print('[STACKTRACE] $stackTrace');
-
-      return Left(ServerFailure('Unexpected error: $e'));
+    if (params.userId.isEmpty) {
+      return Left(ValidationFailure('User ID cannot be empty'));
     }
+    if (params.roomId.isEmpty) {
+      return Left(ValidationFailure('Room ID cannot be empty'));
+    }
+    if (params.text.isEmpty) {
+      return Left(ValidationFailure('Message text cannot be empty'));
+    }
+    if (params.messageId.isEmpty) {
+      return Left(ValidationFailure('Message ID cannot be empty'));
+    }
+
+    final message = MessageEntity(
+      id: params.messageId,
+      userId: params.userId,
+      chatRoomId: params.roomId,
+      text: params.text,
+      timestamp: DateTime.now(),
+    );
+
+    final saveResult = await messageRepository.saveMessage(message);
+    if (saveResult.isLeft()) return saveResult;
+
+    return connectionRepository.broadcastMessage(params.roomId, message);
   }
 }
 

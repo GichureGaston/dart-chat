@@ -1,6 +1,9 @@
-import 'dart:io';
+import 'package:dartz/dartz.dart';
 
+import '../../core/errors/failures.dart';
 import '../entities/connection.dart';
+import '../entities/message.dart';
+import '../entities/user.dart';
 
 abstract class ConnectionRepository {
   Future<Either<Failure, void>> addConnection(ConnectionEntity connection);

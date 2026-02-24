@@ -1,121 +1,81 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:realtimechatapp/data/datasources/connection_data_source.dart';
+import 'package:realtimechatapp/data/repositories/connection_repository_impl.dart';
 
 import 'message_router.dart';
 
 class TcpServer {
   final int port;
   final MessageRouter messageRouter;
-  final ConnectionDataSource connectionDataSource;
+  final ConnectionRepositoryImpl connectionRepository;
+
   late ServerSocket _serverSocket;
   bool _serverRunning = false;
+
   TcpServer({
     required this.port,
     required this.messageRouter,
-    required this.connectionDataSource,
+    required this.connectionRepository,
   });
 
   Future<void> startServer() async {
-    try {
-      _serverSocket = await ServerSocket.bind(
-        InternetAddress.loopbackIPv4,
-        port,
-      );
-      _serverRunning = true;
-      await for (Socket socket in _serverSocket) {
-        handleNewClient(socket);
-      }
-    } catch (e) {}
+    _serverSocket = await ServerSocket.bind(InternetAddress.loopbackIPv4, port);
+    _serverRunning = true;
+    print('[INFO] Server started on port $port');
+
+    await for (final socket in _serverSocket) {
+      handleNewClient(socket);
+    }
   }
 
   void handleNewClient(Socket socket) {
-    try {
-      final clientAddress =
-          '${socket.remoteAddress.address}:${socket.remotePort}';
-      socket.listen(
-        (_) {},
-        onError: (error) {
-          print('[ERROR] Socket error from $clientAddress: $error');
+    final socketId = '${socket.remoteAddress.address}:${socket.remotePort}';
 
-          handleClientDisconnect(socket, clientAddress);
-          socket.destroy();
-        },
-        onDone: () {
-          print('[DONE] Client Disconnected $clientAddress');
-        },
-      );
-    } catch (e) {
-      print('[ERROR] Error handling new client: $e');
+    connectionRepository.registerSocket(socketId, socket);
 
-      try {
-        socket.close();
-      } catch (_) {}
-    }
+    socket.listen(
+      (data) => onDataReceived(data, socket, socketId),
+      onError: (error) {
+        handleClientDisconnect(socket, socketId);
+        socket.destroy();
+      },
+      onDone: () => handleClientDisconnect(socket, socketId),
+    );
   }
 
   Future<void> onDataReceived(
     List<int> data,
     Socket socket,
-    String clientAddress,
+    String socketId,
   ) async {
-    try {
-      if (data.isEmpty) {
-        print('[NOPE] Received empty data from $clientAddress');
+    if (data.isEmpty) return;
 
-        return;
-      }
+    final rawMessage = String.fromCharCodes(data).trim();
+    if (rawMessage.isEmpty) return;
 
-      final rawMessage = String.fromCharCodes(data).trim();
-
-      if (rawMessage.isEmpty) return;
-
-      final messages = rawMessage.split('\n');
-
-      for (final message in messages) {
-        if (message.isEmpty) continue;
-
-        print('\n[INFO] Received from $clientAddress:');
-
-        print('[INFO] Raw: $message');
-
-        await messageRouter.routeMessage(message, socket);
-      }
-    } catch (e, stackTrace) {
-      print('[ERROR] Error processing message from $clientAddress: $e');
-
-      print('[STACKTRACE] $stackTrace');
-
+    for (final message in rawMessage.split('\n')) {
+      if (message.isEmpty) continue;
       try {
+        await messageRouter.routeMessage(message, socket, socketId);
+      } catch (e) {
         final errorResponse = jsonEncode({
           'type': 'error',
           'message': 'Invalid message format: $e',
         });
         socket.write('$errorResponse\n');
-      } catch (_) {}
+      }
     }
   }
 
-  void handleClientDisconnect(Socket socket, String clientAddress) {
-    try {
-      connectionDataSource.removeConnection(socket);
-      print('[YOHOO]Connection Removed for$clientAddress\n');
-    } catch (e) {
-      print('[ERROR] Error removing client connection: $e');
-    }
+  void handleClientDisconnect(Socket socket, String socketId) {
+    connectionRepository.removeConnection(socketId);
+    socket.destroy();
   }
 
   Future<void> shutdown() async {
-    if (_serverRunning) return;
-    try {
-      print('\n[INFO] Shutting down server...');
-
-      _serverRunning = false;
-      await _serverSocket.close();
-      print('[SUCCESS] Server shutdown complete');
-    } catch (e) {
-      print('[ERROR] Error shutting down server: $e');
-    }
+    if (!_serverRunning) return;
+    _serverRunning = false;
+    await _serverSocket.close();
   }
 }

@@ -7,17 +7,22 @@ class ChatRoomModel {
   ChatRoomModel({
     required this.id,
     required this.name,
+    required this.members,
     this.description,
     this.createdAt,
-    required this.members,
   });
+
   factory ChatRoomModel.fromJson(Map<String, dynamic> json) =>
       _$ChatRoomModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ChatRoomModelToJson(this);
+
   final String id;
   final String name;
   final String? description;
   final DateTime? createdAt;
-  final Set<String> members;
+  final List<String> members;
+
   ChatRoomModel copyWith({
     String? id,
     String? name,
