@@ -13,9 +13,29 @@ void main() async {
     // Listen for messages from server
     socket.listen(
       (List<int> data) {
-        final message = String.fromCharCodes(data).trim();
-        if (message.isNotEmpty) {
-          print('[SERVER] $message\n');
+        final messages = String.fromCharCodes(data).trim().split('\n');
+        for (final message in messages) {
+          if (message.isEmpty) continue;
+          try {
+            final decoded = jsonDecode(message);
+            final type = decoded['type'];
+            if (type == 'message') {
+              final d = decoded['data'];
+              print('\n[${d['userId']}] ${d['text']}\n');
+            } else if (type == 'presence') {
+              final d = decoded['data'];
+              print('\n[PRESENCE] ${d['userName']} is ${d['status']}\n');
+            } else if (type == 'login_success') {
+              final d = decoded['data'];
+              print('\n[LOGIN] ${d['message']}\n');
+            } else if (type == 'error') {
+              print('\n[ERROR] ${decoded['message']}\n');
+            } else {
+              print('\n[SERVER] $message\n');
+            }
+          } catch (_) {
+            print('\n[SERVER] $message\n');
+          }
         }
       },
       onError: (error) {
