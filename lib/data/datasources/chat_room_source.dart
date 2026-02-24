@@ -35,8 +35,11 @@ class ChatRoomLocalDataSourceImpl implements ChatRoomLocalDataSource {
     if (roomId.isEmpty) throw ArgumentError('Room ID cannot be empty');
     if (userId.isEmpty) throw ArgumentError('User ID cannot be empty');
 
-    final room = _rooms[roomId];
-    if (room == null) throw ArgumentError('Room not found: $roomId');
+    if (!_rooms.containsKey(roomId)) {
+      _rooms[roomId] = ChatRoomModel(id: roomId, name: roomId, members: []);
+    }
+
+    final room = _rooms[roomId]!;
     if (room.members.contains(userId)) return;
 
     _rooms[roomId] = room.copyWith(members: [...room.members, userId]);
