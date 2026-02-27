@@ -9,7 +9,6 @@ class TcpServer {
   final int port;
   final MessageRouter messageRouter;
   final ConnectionRepositoryImpl connectionRepository;
-
   late ServerSocket _serverSocket;
   bool _serverRunning = false;
 
