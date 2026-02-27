@@ -87,9 +87,13 @@ void main() async {
           print('[ERROR] Usage: login <userId> <userName> <roomId>');
           continue;
         }
-        socket.write(
-          '${jsonEncode({'type': 'login', 'userId': parts[1], 'userName': parts[2], 'roomId': parts[3]})}\n',
-        );
+        final message = jsonEncode({
+          'type': 'login',
+          'userId': parts[1],
+          'userName': parts[2],
+          'roomId': parts[3],
+        });
+        socket.add(utf8.encode('$message\n'));
         continue;
       }
 
