@@ -51,7 +51,7 @@ class TcpServer {
   ) async {
     if (data.isEmpty) return;
 
-    final rawMessage = String.fromCharCodes(data).trim();
+    final rawMessage = utf8.decode(data).trim();
     if (rawMessage.isEmpty) return;
 
     for (final message in rawMessage.split('\n')) {
