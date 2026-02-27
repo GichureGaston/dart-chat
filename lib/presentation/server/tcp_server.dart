@@ -63,7 +63,7 @@ class TcpServer {
           'type': 'error',
           'message': 'Invalid message format: $e',
         });
-        socket.write('$errorResponse\n');
+        socket.add(utf8.encode('$errorResponse\n'));
       }
     }
   }
