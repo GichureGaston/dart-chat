@@ -103,10 +103,14 @@ void main() async {
           print('[ERROR] Usage: message <userId> <roomId> <text>');
           continue;
         }
-        socket.write(
-          '${jsonEncode({'type': 'message', 'messageId': DateTime.now().millisecondsSinceEpoch.toString(), 'userId': parts[1], 'roomId': parts[2], 'text': parts.sublist(3).join(' ')})}\n',
-        );
-        continue;
+        final message = jsonEncode({
+          'type': 'message',
+          'messageId': DateTime.now().millisecondsSinceEpoch.toString(),
+          'userId': parts[1],
+          'roomId': parts[2],
+          'text': parts.sublist(3).join(' '),
+        });
+        socket.add(utf8.encode('$message\n'));
       }
 
       print('[ERROR] Unknown command. Try: login, message, or quit');
