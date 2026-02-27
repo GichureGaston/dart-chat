@@ -12,6 +12,18 @@ void main() async {
     print('  login <userId> <userName> <roomId>');
     print('  message <userId> <roomId> <text>');
     print('  quit\n');
+    final StringBuffer receiveBuffer = StringBuffer();
+
+    void streamProcessBuffer() {
+      while (true) {
+        final bufferContent = receiveBuffer.toString();
+        final newlineIndex = bufferContent.indexOf('\n');
+
+        if (newlineIndex == -1) {
+          break;
+        }
+
+        final message = bufferContent.substring(0, newlineIndex).trim();
 
     socket.listen(
       (List<int> data) {
