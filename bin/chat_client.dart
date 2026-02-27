@@ -25,11 +25,10 @@ void main() async {
 
         final message = bufferContent.substring(0, newlineIndex).trim();
 
-    socket.listen(
-      (List<int> data) {
-        final messages = String.fromCharCodes(data).trim().split('\n');
-        for (final message in messages) {
-          if (message.isEmpty) continue;
+        receiveBuffer.clear();
+        receiveBuffer.write(bufferContent.substring(newlineIndex + 1));
+
+        if (message.isNotEmpty) {
           try {
             final decoded = jsonDecode(message);
             final type = decoded['type'];
