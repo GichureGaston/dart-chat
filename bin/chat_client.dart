@@ -51,6 +51,14 @@ void main() async {
             print('\n[SERVER] $message\n');
           }
         }
+      }
+    }
+
+    socket.listen(
+      (List<int> data) {
+        final chunk = utf8.decode(data);
+        receiveBuffer.write(chunk);
+        streamProcessBuffer();
       },
       onError: (error) => print('[ERROR] $error'),
       onDone: () {
